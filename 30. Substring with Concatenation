@@ -1,0 +1,52 @@
+
+import java.util.*;
+
+class Solution {
+    public List<Integer> findSubstring(String s, String[] words) {
+        List<Integer> result = new ArrayList<>();
+
+        if (words.length == 0) return result;
+
+        int len = words[0].length();
+        int total = len * words.length;
+
+        if (s.length() < total) return result;
+
+        Map<String, Integer> wordCount = new HashMap<>();
+
+        for (String word : words) {
+            wordCount.put(word, wordCount.getOrDefault(word, 0) + 1);
+        }
+
+        for (int i = 0; i < len; i++) {
+            int left = i, count = 0;
+            Map<String, Integer> seen = new HashMap<>();
+
+            for (int right = i; right + len <= s.length(); right += len) {
+                String word = s.substring(right, right + len);
+
+                if (!wordCount.containsKey(word)) {
+                    seen.clear();
+                    count = 0;
+                    left = right + len;
+                } else {
+                    seen.put(word, seen.getOrDefault(word, 0) + 1);
+                    count++;
+
+                    while (seen.get(word) > wordCount.get(word)) {
+                        String first = s.substring(left, left + len);
+                        seen.put(first, seen.get(first) - 1);
+                        left += len;
+                        count--;
+                    }
+
+                    if (count == words.length) {
+                        result.add(left);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+}
